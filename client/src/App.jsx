@@ -15,13 +15,6 @@ const App = () => {
     const getUser=async()=>{
       try{
         const result = await axios.get(ServerUrl + "/api/user/current-user",{withCredentials:true});
-        // const user = await fetch(ServerUrl + "/api/user/current-user",{
-        //    method:"GET",
-        //    credentials: "include"
-        // });
-        // const result = await user.json();
-
-        // console.log(result.data);
         dispatch(setUserData(result.data));
       }
       catch(error){
