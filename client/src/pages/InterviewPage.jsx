@@ -6,7 +6,7 @@ import Step3Report from '../components/Step3Report'
 function InterviewPage() {
 
   const [step, setStep] = useState(1)
-  const [interviewData, setInterviwData] = useState(null)
+  const [interviewData, setInterviewData] = useState(null)
 
   return (
 
@@ -17,7 +17,7 @@ function InterviewPage() {
         <Step1SetUp
           onStart={(data) => {
 
-            setInterviwData(data);
+            setInterviewData(data);
             setStep(2)
 
           }}
@@ -32,7 +32,7 @@ function InterviewPage() {
 
           onFinish={(report) => {
 
-            setInterviwData(report);
+            setInterviewData(report);
             setStep(3)
 
           }}

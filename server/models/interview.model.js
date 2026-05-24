@@ -1,4 +1,5 @@
 import mongoose, { model } from "mongoose";
+import User from "./user.model.js";
 
 const questionsSchema = new mongoose.Schema({
 
@@ -47,7 +48,7 @@ const interviewSchema = new mongoose.Schema({
     resumeText:{
         type:String
     },
-    question:[questionsSchema],
+    questions:[questionsSchema],
 
     finalScore: {
         type: Number,

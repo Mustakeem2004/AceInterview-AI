@@ -10,8 +10,12 @@ import {
   FaMicrophoneAlt,
   FaChartLine,
 } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 
 const Step1Setup = ({ onStart }) => {
+  const {userData} = useSelector((state) => state.user)
+  const dispatch= useDispatch()
   const [role, setRole] = useState("");
   const [experience, setExperience] = useState("");
   const [mode, setMode] = useState("Technical");
@@ -22,6 +26,7 @@ const Step1Setup = ({ onStart }) => {
   const [resumeText, setResumeText] = useState("");
   const [analysisDone, setAnalysisDone] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleUploadResume = async () => {
     if (!resumeFile || analyzing) return;
@@ -51,6 +56,58 @@ const Step1Setup = ({ onStart }) => {
       setAnalyzing(false);
     }
   };
+
+
+  const handleStart = async () => {
+  const trimmedRole = role.trim();
+  const trimmedExperience = experience.trim();
+
+  if (!trimmedRole || !trimmedExperience) {
+    setErrorMessage("Role and experience are required.");
+    return;
+  }
+
+  setErrorMessage("");
+  setLoading(true);
+
+  try {
+    const result = await axios.post(
+      ServerUrl + "/api/interview/generate-questions",
+      {
+        role: trimmedRole,
+        experience: trimmedExperience,
+        mode,
+        resumeText,
+        projects,
+        skills,
+      },
+      { withCredentials: true }
+    );
+
+    console.log(result.data);
+
+    if (userData) {
+      dispatch(
+        setUserData({
+          ...userData,
+          credits: result.data.creditsLeft,
+        })
+      );
+    }
+
+    setLoading(false);
+
+    onStart(result.data);
+  } catch (error) {
+    console.log(error);
+    setErrorMessage(
+      error.response?.data?.message || "Unable to start the interview."
+    );
+    setLoading(false);
+  }
+};
+
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -141,6 +198,7 @@ const Step1Setup = ({ onStart }) => {
             </div>
             <select
               onChange={(e) => setMode(e.target.value)}
+              value={mode}
               className="w-full py-3 px-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
             >
               <option value="Technical">Technical Interview</option>
@@ -221,13 +279,18 @@ const Step1Setup = ({ onStart }) => {
                 )}
               </motion.div>
             )}
+            {errorMessage && (
+              <p className="text-sm text-red-600 font-medium">{errorMessage}</p>
+            )}
+
             <motion.button
-              disabled={!role || !experience}
+            onClick={handleStart}
+              disabled={!role.trim() || !experience.trim() || loading}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
               className="w-full disabled:bg-gray-600 bg-green-600 hover:bg-green-700 text-white py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md"
             >
-              Start Interview
+              {loading? "Starting..." : "Start Interview"}
             </motion.button>
           </div>
         </motion.div>
