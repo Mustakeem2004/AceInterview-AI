@@ -14,8 +14,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "../redux/userSlice";
 
 const Step1Setup = ({ onStart }) => {
-  const {userData} = useSelector((state) => state.user)
-  const dispatch= useDispatch()
+  const { userData } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const [role, setRole] = useState("");
   const [experience, setExperience] = useState("");
   const [mode, setMode] = useState("Technical");
@@ -57,56 +57,54 @@ const Step1Setup = ({ onStart }) => {
     }
   };
 
-
   const handleStart = async () => {
-  const trimmedRole = role.trim();
-  const trimmedExperience = experience.trim();
+    const trimmedRole = role.trim();
+    const trimmedExperience = experience.trim();
 
-  if (!trimmedRole || !trimmedExperience) {
-    setErrorMessage("Role and experience are required.");
-    return;
-  }
-
-  setErrorMessage("");
-  setLoading(true);
-
-  try {
-    const result = await axios.post(
-      ServerUrl + "/api/interview/generate-questions",
-      {
-        role: trimmedRole,
-        experience: trimmedExperience,
-        mode,
-        resumeText,
-        projects,
-        skills,
-      },
-      { withCredentials: true }
-    );
-
-    console.log(result.data);
-
-    if (userData) {
-      dispatch(
-        setUserData({
-          ...userData,
-          credits: result.data.creditsLeft,
-        })
-      );
+    if (!trimmedRole || !trimmedExperience) {
+      setErrorMessage("Role and experience are required.");
+      return;
     }
 
-    setLoading(false);
+    setErrorMessage("");
+    setLoading(true);
 
-    onStart(result.data);
-  } catch (error) {
-    console.log(error);
-    setErrorMessage(
-      error.response?.data?.message || "Unable to start the interview."
-    );
-    setLoading(false);
-  }
-};
+    try {
+      const result = await axios.post(
+        ServerUrl + "/api/interview/generate-questions",
+        {
+          role: trimmedRole,
+          experience: trimmedExperience,
+          mode,
+          resumeText,
+          projects,
+          skills,
+        },
+        { withCredentials: true },
+      );
 
+      console.log(result.data);
+
+      if (userData) {
+        dispatch(
+          setUserData({
+            ...userData,
+            credits: result.data.creditsLeft,
+          }),
+        );
+      }
+
+      setLoading(false);
+
+      onStart(result.data);
+    } catch (error) {
+      console.log(error);
+      setErrorMessage(
+        error.response?.data?.message || "Unable to start the interview.",
+      );
+      setLoading(false);
+    }
+  };
 
   return (
     <motion.div
@@ -154,7 +152,7 @@ const Step1Setup = ({ onStart }) => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3 + index * 0.15 }}
                 whileHover={{ scale: 1.03 }}
-                className="flex items-center space-x-4 bg-white p-4 rounded-xl shadow-sm cursor-pointer"
+                className="flex items-center gap-5 bg-white p-4 rounded-xl shadow-sm cursor-pointer"
               >
                 {item.icon}
                 <span>{item.text}</span>
@@ -284,13 +282,13 @@ const Step1Setup = ({ onStart }) => {
             )}
 
             <motion.button
-            onClick={handleStart}
+              onClick={handleStart}
               disabled={!role.trim() || !experience.trim() || loading}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
               className="w-full disabled:bg-gray-600 bg-green-600 hover:bg-green-700 text-white py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md"
             >
-              {loading? "Starting..." : "Start Interview"}
+              {loading ? "Starting..." : "Start Interview"}
             </motion.button>
           </div>
         </motion.div>
