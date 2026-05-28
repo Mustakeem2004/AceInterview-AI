@@ -12,9 +12,12 @@ import paymentRouter from "./routes/payment.route.js"
 
 const app=express()
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin: [
+        "http://localhost:5173",
+        "https://aceinterview-ai.onrender.com"
+    ],
     credentials: true
-}))
+}));
 
 app.use(express.json())
 app.use(cookieParser())
