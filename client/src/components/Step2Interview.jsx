@@ -12,57 +12,22 @@ import { ServerUrl } from "../App";
 
 const Step2Interview = ({ interviewData, onFinish }) => {
   const { interviewId, questions, userName } = interviewData;
-
   const [isIntroPhase, setIsIntroPhase] = useState(true);
-
   const [isMicOn, setIsMicOn] = useState(true);
-
   const recognitionRef = useRef(null);
-
   const [isAIPlaying, setIsAIPlaying] = useState(false);
-
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const [answer, setAnswer] = useState("");
-
   const [feedback, setFeedback] = useState("");
-
   const [timeLeft, setTimeLeft] = useState(questions[0]?.timeLimit || 60);
-
   const [selectedVoice, setSelectedVoice] = useState(null);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [voiceGender, setVoiceGender] = useState("female");
-
   const [subtitle, setSubtitle] = useState("");
-
   const videoRef = useRef(null);
-
   const currentQuestion = questions[currentIndex];
 
 
-  const startMic = () => {
-
-  if (recognitionRef.current && !isAIPlaying) {
-
-    try {
-      recognitionRef.current.start();
-    } catch {}
-
-  }
-
-};
-
-
-
-const stopMic = () => {
-
-  if (recognitionRef.current) {
-    recognitionRef.current.stop();
-  }
-
-};
 
   useEffect(() => {
     const loadVoices = () => {
@@ -110,16 +75,21 @@ const stopMic = () => {
 
   const videoSource = voiceGender === "male" ? maleVideo : femaleVideo;
 
+
   /* ---------------- SPEAK FUNCTION ---------------- */
 
   const speakText = (text) => {
     return new Promise((resolve) => {
+//       Wait until speaking finishes
+// then continue
       if (!window.speechSynthesis || !selectedVoice) {
         resolve();
         return;
       }
-
+// Does browser support speech?
+// Is a voice selected?
       window.speechSynthesis.cancel();
+      // Stops any ongoing speech
 
       // Add natural pauses after commas and periods
       const humanText = text.replace(/,/g, ", ... ").replace(/\./g, ". ... ");
@@ -159,6 +129,7 @@ const stopMic = () => {
     });
   };
 
+
   useEffect(() => {
     if (!selectedVoice) {
       return;
@@ -194,6 +165,8 @@ const stopMic = () => {
     runIntro();
   }, [selectedVoice, isIntroPhase, currentIndex]);
 
+
+
   useEffect(() => {
     if (isIntroPhase) return;
 
@@ -215,14 +188,16 @@ const stopMic = () => {
     return () => clearInterval(timer);
   }, [isIntroPhase, currentIndex]);
 
-  useEffect(() => {
 
+  useEffect(() => {
   if (!isIntroPhase && currentQuestion) {
     setTimeLeft(currentQuestion.timeLimit || 60);
   }
 
 }, [currentIndex]);
 
+
+// MIC.....
   useEffect(() => {
     if (!("webkitSpeechRecognition" in window)) return;
 
@@ -243,15 +218,44 @@ const stopMic = () => {
     recognitionRef.current = recognition;
   }, []);
 
+
+useEffect(() => {
+
+  return () => {
+
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current.abort();
+    }
+
+    window.speechSynthesis.cancel();
+
+  };
+
+}, []);
+
+    const startMic = () => {
+  if (recognitionRef.current && !isAIPlaying) {
+      recognitionRef.current.start();
+  }
+};
+
+const stopMic = () => {
+  if (recognitionRef.current) {
+    recognitionRef.current.stop();
+  }
+};
+
   const toggleMic = () => {
     if (isMicOn) {
       stopMic();
     } else {
       startMic();
     }
-
     setIsMicOn(!isMicOn);
   };
+
+
 
   const submitAnswer = async () => {
     if (isSubmitting) return;
@@ -295,8 +299,8 @@ const stopMic = () => {
   }
 
   await speakText("Alright, let's move to the next question.");
-
   setCurrentIndex(currentIndex + 1);
+
 
   setTimeout(() => {
     if (isMicOn) startMic();
@@ -343,20 +347,10 @@ useEffect(() => {
 
 
 
-useEffect(() => {
 
-  return () => {
 
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      recognitionRef.current.abort();
-    }
 
-    window.speechSynthesis.cancel();
 
-  };
-
-}, []);
 
 
   return (
@@ -404,8 +398,8 @@ useEffect(() => {
             <div className="grid grid-cols-2 gap-6 text-center">
               <div>
                 <span className="text-2xl font-bold text-emerald-600">
-                  {" "}
                   {currentIndex + 1}
+                  {" "}
                 </span>
                 <span className="text-xs text-gray-400">Current Question</span>
               </div>
@@ -413,6 +407,7 @@ useEffect(() => {
               <div>
                 <span className="text-2xl font-bold text-emerald-600">
                   {questions.length}
+                  {" "}
                 </span>
                 <span className="text-xs text-gray-400">Total Questions</span>
               </div>
@@ -466,11 +461,13 @@ useEffect(() => {
               </motion.button>
             </div>
           ) : (
+            
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="mt-6 bg-emerald-50 border border-emerald-200 p-5 rounded-2xl shadow-sm"
             >
+              
               <p className="text-emerald-700 font-medium mb-4">{feedback}</p>
 
               <button

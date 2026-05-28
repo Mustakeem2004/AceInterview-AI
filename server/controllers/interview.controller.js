@@ -17,6 +17,8 @@ const extractJsonResponse = (responseText) => {
   return objectMatch ? objectMatch[0] : trimmed;
 };
 
+
+
 export const analyzeResume = async (req, res) => {
   try {
     if (!req.file) {
@@ -472,7 +474,7 @@ export const getMyInterviews = async (req, res) => {
 
   try {
 
-    const interviews = await Interview.findOne({
+    const interviews = await Interview.find({
       userId: req.userId
     })
       .sort({ createdAt: -1 })
