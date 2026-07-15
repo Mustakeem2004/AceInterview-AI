@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { setUserData } from '../redux/userSlice'
 import AuthModel from './AuthModel.jsx'
+import { ServerUrl } from '../App'
 
 const Navbar = () => {
     const {userData} = useSelector((state)=> state.user)
@@ -19,11 +20,11 @@ const Navbar = () => {
     const [showAuth,setShowAuth] = useState(false)
     const handleLogout = async()=>{
       try{
-          await axios.post('http://localhost:8000/api/auth/logout',{}, {withCredentials:true});
-       dispatch(setUserData(null));
-       setShowUserPopup(false)
-       setShowCreditPopup(false)
-       navigate("/")
+          await axios.post(ServerUrl + '/api/auth/logout', {}, {withCredentials:true});
+          dispatch(setUserData(null));
+          setShowUserPopup(false)
+          setShowCreditPopup(false)
+          navigate("/")
        
       }
       catch(error){
