@@ -277,10 +277,9 @@ const stopMic = () => {
       );
 
       setFeedback(result.data.feedback);
+      setIsSubmitting(false);
 
       await speakText(result.data.feedback);
-
-      setIsSubmitting(false);
     } catch (error) {
       console.log(error);
 
@@ -292,6 +291,7 @@ const stopMic = () => {
 
   setAnswer("");
   setFeedback("");
+    setIsSubmitting(false);
 
   if (currentIndex + 1 >= questions.length) {
     finishInterview();
