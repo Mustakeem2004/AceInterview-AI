@@ -16,7 +16,7 @@ function Footer() {
           </div>
 
           <h2 className='font-semibold'>
-            InterviewIQ.AI
+            AceInterview AI
           </h2>
 
         </div>
